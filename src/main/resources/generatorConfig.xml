@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <context id="context" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressDate" value="true" />
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="false" />
+        </commentGenerator>
+        <!-- 数据库连接URL，用户名，密码 -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.200.133:3306/push?useUnicode=true&amp;characterEncoding=UTF-8"
+                        userId="push_mycat" password="eesEvvadtewjiss@TalCoak8Wreps8" />
+        <!--生成模型的包名和位置 -->
+        <javaModelGenerator targetPackage="com.fly.domain" targetProject="src/main/java/" >
+        </javaModelGenerator>
+        <!--映射文件的包名和位置 -->
+        <sqlMapGenerator targetPackage="com.fly.dao" targetProject="src/main/resources" />
+        <!--DAO的包名和位置 -->
+        <javaClientGenerator targetPackage="com.fly.dao" targetProject="src/main/java" type="XMLMAPPER" />
+        <!--要生成哪些表 -->
+        <table tableName="push_message" enableSelectByExample="false" enableDeleteByExample="false"
+               enableCountByExample="false" enableUpdateByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+    </context>
+</generatorConfiguration>
