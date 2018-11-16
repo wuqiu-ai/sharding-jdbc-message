@@ -1,7 +1,10 @@
 package com.fly;
 
+import com.fly.dao.AppDeviceMapper;
+import com.fly.domain.AppDevice;
 import com.fly.domain.PushMessage;
 import com.fly.service.MessageService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,13 +26,22 @@ public class ApplicationTests {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private AppDeviceMapper appDeviceMapper;
+
     @Test
-    public void test1(){
+    public void messageTest(){
         PushMessage message1 = messageService.selectByPrimaryKey(12360621643271168L);
 //        PushMessage message2 = messageService.selectByPrimaryKey(12360622139247616L);
 //        PushMessage message3 = messageService.selectByPrimaryKey(12360621677874176L);
 //        PushMessage message4 = messageService.selectByPrimaryKey(12360621674728448L);
         LOGGER.info(".....");
+    }
+
+    @Test
+    public void appDeviceTest(){
+        AppDevice appDevice = appDeviceMapper.selectByPrimaryKey(200);
+        Assert.assertFalse(null != appDevice);
     }
 
 }

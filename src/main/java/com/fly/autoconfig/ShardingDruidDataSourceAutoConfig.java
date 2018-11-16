@@ -90,6 +90,10 @@ public class ShardingDruidDataSourceAutoConfig{
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+
+        //默认数据源
+        shardingRuleConfig.setDefaultDataSourceName("main");
+
         // 获取数据源对象
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
         return dataSource;

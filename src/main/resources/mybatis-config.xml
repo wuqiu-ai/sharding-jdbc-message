@@ -17,5 +17,6 @@
 <configuration>
     <mappers>
         <mapper resource="mapper/PushMessageMapper.xml"/>
+        <mapper resource="mapper/AppDeviceMapper.xml"/>
     </mappers>
 </configuration>

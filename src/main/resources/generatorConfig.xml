@@ -14,11 +14,11 @@
         <javaModelGenerator targetPackage="com.fly.domain" targetProject="src/main/java/" >
         </javaModelGenerator>
         <!--映射文件的包名和位置 -->
-        <sqlMapGenerator targetPackage="com.fly.dao" targetProject="src/main/resources" />
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources" />
         <!--DAO的包名和位置 -->
         <javaClientGenerator targetPackage="com.fly.dao" targetProject="src/main/java" type="XMLMAPPER" />
         <!--要生成哪些表 -->
-        <table tableName="push_message" enableSelectByExample="false" enableDeleteByExample="false"
+        <table tableName="app_device" enableSelectByExample="false" enableDeleteByExample="false"
                enableCountByExample="false" enableUpdateByExample="false"
                selectByExampleQueryId="false">
         </table>
