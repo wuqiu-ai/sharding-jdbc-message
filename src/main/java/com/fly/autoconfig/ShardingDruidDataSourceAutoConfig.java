@@ -8,6 +8,7 @@ import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @Configuration
 @EnableAutoConfiguration
+@MapperScan("com.fly.dao")
 public class ShardingDruidDataSourceAutoConfig{
 
     @Primary
