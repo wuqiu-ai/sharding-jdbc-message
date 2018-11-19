@@ -225,4 +225,12 @@
       deviceType = #{devicetype,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <!--//自定义sql//-->
+  <!-- distint语法 -->
+  <select id="selectTestDistince" resultMap="ResultMapWithBLOBs">
+    SELECT DISTINCT(userName),id, lastLoginUserName, uuid, token, status, createDate, modifyDate, bigVersion, projectType,
+    deviceType FROM app_device LIMIT 100
+  </select>
+
 </mapper>

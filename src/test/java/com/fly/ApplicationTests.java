@@ -1,6 +1,7 @@
 package com.fly;
 
 import com.fly.dao.AppDeviceMapper;
+import com.fly.dao.PushMessageMapper;
 import com.fly.domain.AppDevice;
 import com.fly.domain.PushMessage;
 import com.fly.service.MessageService;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 /**
  * @author: peijiepang
  * @date 2018/11/14
@@ -24,14 +27,14 @@ public class ApplicationTests {
     private final static Logger LOGGER = LoggerFactory.getLogger(ApplicationTests.class);
 
     @Autowired
-    private MessageService messageService;
+    private PushMessageMapper pushMessageMapper;
 
     @Autowired
     private AppDeviceMapper appDeviceMapper;
 
     @Test
     public void messageTest(){
-        PushMessage message1 = messageService.selectByPrimaryKey(12360621643271168L);
+        PushMessage message1 = pushMessageMapper.selectByPrimaryKey(12360621643271168L);
 //        PushMessage message2 = messageService.selectByPrimaryKey(12360622139247616L);
 //        PushMessage message3 = messageService.selectByPrimaryKey(12360621677874176L);
 //        PushMessage message4 = messageService.selectByPrimaryKey(12360621674728448L);
@@ -39,9 +42,27 @@ public class ApplicationTests {
     }
 
     @Test
+    public void saveMessage(){
+        PushMessage pushMessage = new PushMessage();
+        pushMessage.setJobid("333");
+        pushMessage.setTraceid(1L);
+        pushMessageMapper.insert(pushMessage);
+        LOGGER.info(".....");
+    }
+
+    @Test
     public void appDeviceTest(){
         AppDevice appDevice = appDeviceMapper.selectByPrimaryKey(200);
         Assert.assertFalse(null != appDevice);
+    }
+
+    /**
+     * 测试没有分片的sql直接经过ss，distince语法（默认分片不支持）
+     */
+    @Test
+    public void distinceTest(){
+        List<AppDevice> appDevices = appDeviceMapper.selectTestDistince();
+        Assert.assertFalse(null != appDevices);
     }
 
 }

@@ -1,50 +1,50 @@
 debug: true
 
-#dxy:
-#  datasource:
-#    main-data-source:
-#      url: jdbc:mysql://192.168.200.133:3306/push
-#      username: push_mycat
-#      password: eesEvvadtewjiss@TalCoak8Wreps8
-#    ds0:
-#      url: jdbc:mysql://192.168.200.133:3306/push_message_01
-#      username: push_mycat
-#      password: eesEvvadtewjiss@TalCoak8Wreps8
-#    ds1:
-#      url: jdbc:mysql://192.168.200.133:3306/push_message_02
-#      username: push_mycat
-#      password: eesEvvadtewjiss@TalCoak8Wreps8
-#    ds2:
-#      url: jdbc:mysql://192.168.200.133:3306/push_message_03
-#      username: push_mycat
-#      password: eesEvvadtewjiss@TalCoak8Wreps8
-#    ds3:
-#      url: jdbc:mysql://192.168.200.133:3306/push_message_04
-#      username: push_mycat
-#      password: eesEvvadtewjiss@TalCoak8Wreps8
-
 dxy:
   datasource:
     main-data-source:
-      url: jdbc:mysql://127.0.0.1:3306/push
-      username: root
-      password: 123456
+      url: jdbc:mysql://192.168.200.133:3306/push
+      username: push_mycat
+      password: eesEvvadtewjiss@TalCoak8Wreps8
     ds0:
-      url: jdbc:mysql://127.0.0.1:3306/push_message_01
-      username: root
-      password: 123456
+      url: jdbc:mysql://192.168.200.133:3306/push_message_01
+      username: push_mycat
+      password: eesEvvadtewjiss@TalCoak8Wreps8
     ds1:
-      url: jdbc:mysql://127.0.0.1:3306/push_message_02
-      username: root
-      password: 123456
+      url: jdbc:mysql://192.168.200.133:3306/push_message_02
+      username: push_mycat
+      password: eesEvvadtewjiss@TalCoak8Wreps8
     ds2:
-      url: jdbc:mysql://127.0.0.1:3306/push_message_03
-      username: root
-      password: 123456
+      url: jdbc:mysql://192.168.200.133:3306/push_message_03
+      username: push_mycat
+      password: eesEvvadtewjiss@TalCoak8Wreps8
     ds3:
-      url: jdbc:mysql://127.0.0.1:3306/push_message_04
-      username: root
-      password: 123456
+      url: jdbc:mysql://192.168.200.133:3306/push_message_04
+      username: push_mycat
+      password: eesEvvadtewjiss@TalCoak8Wreps8
+
+#dxy:
+#  datasource:
+#    main-data-source:
+#      url: jdbc:mysql://127.0.0.1:3306/push
+#      username: root
+#      password: 123456
+#    ds0:
+#      url: jdbc:mysql://127.0.0.1:3306/push_message_01
+#      username: root
+#      password: 123456
+#    ds1:
+#      url: jdbc:mysql://127.0.0.1:3306/push_message_02
+#      username: root
+#      password: 123456
+#    ds2:
+#      url: jdbc:mysql://127.0.0.1:3306/push_message_03
+#      username: root
+#      password: 123456
+#    ds3:
+#      url: jdbc:mysql://127.0.0.1:3306/push_message_04
+#      username: root
+#      password: 123456
 
 mybatis:
 #  config-location: classpath:mybatis-config.xml

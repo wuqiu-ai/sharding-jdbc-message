@@ -2,9 +2,11 @@ package com.fly.autoconfig;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -65,6 +68,11 @@ public class ShardingDruidDataSourceAutoConfig{
         return DruidDataSourceBuilder.create().build();
     }
 
+    /**
+     * 分库分表-模式
+     * @return
+     * @throws SQLException
+     */
     @Bean(name = "dataSource",autowire = Autowire.BY_NAME)
     public DataSource dataSource() throws SQLException {
         // 配置真实数据源
@@ -93,6 +101,29 @@ public class ShardingDruidDataSourceAutoConfig{
 
         // 获取数据源对象
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+        return dataSource;
+    }
+
+    /**
+     * 读写分离模式
+     * @return
+     * @throws SQLException
+     */
+    @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
+    public DataSource dataSource1() throws SQLException {
+        // 配置真实数据源
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("main",mainDataSource());
+        dataSourceMap.put("ds0",ds0DataSource());
+        dataSourceMap.put("ds1",ds1DataSource());
+        dataSourceMap.put("ds2",ds2DataSource());
+        dataSourceMap.put("ds3",ds3DataSource());
+
+        // 配置分库 + 分表策略
+        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
+                Arrays.asList("ds0","ds1","ds2","ds3"));
+        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration,
+                new HashMap<>(),new Properties());
         return dataSource;
     }
 
