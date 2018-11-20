@@ -6,8 +6,11 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
+import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
-import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
+import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -88,6 +91,11 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setLogicTable("push_message");
         orderTableRuleConfig.setActualDataNodes("ds${0..3}.push_message");
 
+        DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
+        defaultKeyGenerator.setWorkerId(21L);
+        orderTableRuleConfig.setKeyGenerator(defaultKeyGenerator);
+        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+
         // 配置分库 + 分表策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceId", "ds${traceId % 4}"));
         //orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
@@ -98,9 +106,25 @@ public class ShardingDruidDataSourceAutoConfig{
 
         //默认数据源
         shardingRuleConfig.setDefaultDataSourceName("main");
-
         // 获取数据源对象
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+//        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
+
+        //数据治理功能
+        // 配置注册中心
+        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+        regConfig.setServerLists("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
+        regConfig.setNamespace("sharding-sphere-orchestration");
+        // 配置数据治理
+        OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
+
+        Properties properties = new Properties();
+        properties.setProperty("sql.show","true");
+
+        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
+                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties, orchConfig);
+
+
+//        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
         return dataSource;
     }
 

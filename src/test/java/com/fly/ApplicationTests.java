@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,7 +47,17 @@ public class ApplicationTests {
         PushMessage pushMessage = new PushMessage();
         pushMessage.setJobid("333");
         pushMessage.setTraceid(1L);
-        pushMessageMapper.insert(pushMessage);
+        pushMessage.setDeviceplatform("asasa");
+        pushMessage.setDevicetoken("asas");
+        pushMessage.setStatus("11");
+        pushMessage.setUserid("33");
+        pushMessage.setAppversion("asasa");
+        pushMessage.setOsversion("asa");
+        pushMessage.setSendtime(new Date());
+        pushMessage.setClicktime(new Date());
+        pushMessage.setCreatetime(new Date());
+        pushMessage.setModifytime(new Date());
+        pushMessageMapper.insertSelective(pushMessage);
         LOGGER.info(".....");
     }
 

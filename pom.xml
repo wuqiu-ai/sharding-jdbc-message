@@ -160,6 +160,19 @@
             <artifactId>sharding-jdbc-core</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-jdbc-orchestration</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!--若使用zookeeper, 请加入下面Maven坐标-->
+        <dependency>
+            <groupId>io.shardingsphere</groupId>
+            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
 
     </dependencies>
 
