@@ -6,10 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -30,8 +27,13 @@ public class ShardingTestController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @GetMapping("/test")
+    public String test(){
+        return "ok";
+    }
+
     @PostMapping("/sharding/sqltest")
-    public String test(@RequestParam("sql")String sql){
+    public String sqltest(@RequestParam("sql")String sql){
         Optional.ofNullable(sql).map(t->t.trim())
                 .orElseThrow( () -> new IllegalArgumentException("sql不能为空"));
         StringTokenizer st = new StringTokenizer(sql," ,?.!:\"\"''\n#");

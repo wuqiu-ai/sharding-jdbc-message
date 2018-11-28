@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    scan:当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+    scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+    debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+ -->
+<configuration scan="true" scanPeriod="60 seconds" debug="true">
+    <!-- 定义变量LOG_HOME用于配置log日志生成的项目主目录  -->
+    <!-- project.name 通过maven打包的方式动态替换 -->
+    <property name="LOG_HOME" value="/home/zhaojun/sharding/logs/"/>
+    <!--日志文件保留天数-->
+    <property name="LOG_MAX_HISTORY" value="30"/>
+    <!--系统当天日志文件保存路径-->
+    <property name="LOG_SYS_HOME" value="${LOG_HOME}/sharding.log"/>
+    <!--系统滚动日志文件保存路径,可以与当天日志目录不同-->
+    <property name="LOG_SYS_ROLL_HOME" value="${LOG_HOME}/sharding.log.%d{yyyy-MM-dd}.%i"/>
+
+    <!-- 定义输出日志的格式
+       %d{yyyy-MM-dd  HH:mm:ss.SSS} 定义日期格式兼容java.text.SimpleDateFormat语法 2014-03-25 14:06:49.812
+       %thread 输出产生日志的线程名
+       %-5level 输出日志级别
+       %logger{80}设置为80表示只输入logger最右边点符号之后的字符串，从最后一个标点符号往前数
+       %msg 输出应用程序提供的信息
+       %n输出平台相关的分行符“\n”或者“\r\n”
+     -->
+    <property name="ENCODER_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+    </appender>
+
+    <!--有缓存，不立即输出-->
+    <appender name="file-sys" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <File>${LOG_SYS_HOME}</File>
+        <!-- rollingPolicy滚动策略
+           TimeBasedRollingPolicy： 最常用的滚动策略，它根据时间来制定滚动策略，既负责滚动也负责出发滚动。有以下子节点：
+              <fileNamePattern>:必要节点，包含文件名及“%d”转换符， “%d”可以包含一个 java.text.SimpleDateFormat指定的时间格式，如：%d{yyyy-MM}。如果直接使用 %d，默认格式是 yyyy-MM-dd。
+                 RollingFileAppender 的file字节点可有可无，通过设置file，可以为活动文件和归档文件指定不同位置，当前日志总是记录到file指定的文件（活动文件），活动文件的名字不会改变；
+                                         如果没设置file，活动文件的名字会根据fileNamePattern 的值，每隔一段时间改变一次。“/”或者“\”会被当做目录分隔符。
+              <maxHistory>:可选节点，控制保留的归档文件的最大数量，超出数量就删除旧文件。假设设置每个月滚动，且 <maxHistory>是6，则只保存最近6个月的文件，删除之前的旧文件。注意，删除旧文件是，那些为了归档而创建的目录也会被删除。
+           FixedWindowRollingPolicy：根据固定窗口算法重命名文件的滚动策略。有以下子节点
+              <minIndex>:窗口索引最小值
+              <maxIndex>:窗口索引最大值，当用户指定的窗口过大时，会自动将窗口设置为12。
+              <fileNamePattern >:必须包含“%i”例如，假设最小值和最大值分别为1和2，命名模式为 mylog%i.log,会产生归档文件mylog1.log和mylog2.log。还可以指定文件压缩选项，例如，mylog%i.log.gz 或者 没有log%i.log.zip
+         -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_SYS_ROLL_HOME}</fileNamePattern>
+            <maxHistory>${LOG_MAX_HISTORY}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>2GB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
+        </encoder>
+    </appender>
+
+    <!--异步appender-->
+    <appender name ="AsyncFile" class= "ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref ="file-sys"/>
+    </appender>
+    <appender name ="AsynConsole" class= "ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <appender-ref ref ="console"/>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="AsyncFile"/>
+        <appender-ref ref="AsynConsole"/>
+    </root>
+</configuration>

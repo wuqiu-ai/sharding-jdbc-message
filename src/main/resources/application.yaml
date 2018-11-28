@@ -56,3 +56,5 @@ logging:
     com:
       fly:
         dao: debug
+server:
+  port: 7777
