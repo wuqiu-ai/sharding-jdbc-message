@@ -1,27 +1,27 @@
-debug: true
+debug: false
 
 dxy:
   datasource:
     main-data-source:
-      url: jdbc:mysql://192.168.200.133:3306/push
-      username: push_mycat
-      password: eesEvvadtewjiss@TalCoak8Wreps8
+      url: jdbc:mysql://192.168.202.137:3306/push_message_source
+      username: pangpeijie
+      password: shagNuwiUs@utdeerUmrunwenosix7
     ds0:
-      url: jdbc:mysql://192.168.200.133:3306/push_message_01
-      username: push_mycat
-      password: eesEvvadtewjiss@TalCoak8Wreps8
+      url: jdbc:mysql://192.168.202.137:3306/push_message_01
+      username: pangpeijie
+      password: shagNuwiUs@utdeerUmrunwenosix7
     ds1:
-      url: jdbc:mysql://192.168.200.133:3306/push_message_02
-      username: push_mycat
-      password: eesEvvadtewjiss@TalCoak8Wreps8
+      url: jdbc:mysql://192.168.202.137:3306/push_message_02
+      username: pangpeijie
+      password: shagNuwiUs@utdeerUmrunwenosix7
     ds2:
-      url: jdbc:mysql://192.168.200.133:3306/push_message_03
-      username: push_mycat
-      password: eesEvvadtewjiss@TalCoak8Wreps8
+      url: jdbc:mysql://192.168.202.137:3306/push_message_03
+      username: pangpeijie
+      password: shagNuwiUs@utdeerUmrunwenosix7
     ds3:
-      url: jdbc:mysql://192.168.200.133:3306/push_message_04
-      username: push_mycat
-      password: eesEvvadtewjiss@TalCoak8Wreps8
+      url: jdbc:mysql://192.168.202.137:3306/push_message_04
+      username: pangpeijie
+      password: shagNuwiUs@utdeerUmrunwenosix7
 
 #dxy:
 #  datasource:
@@ -52,4 +52,7 @@ mybatis:
 
 logging:
   level:
-    root: debug
+    root: info
+    com:
+      fly:
+        dao: debug

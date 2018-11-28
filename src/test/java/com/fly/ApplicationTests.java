@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -74,6 +76,13 @@ public class ApplicationTests {
     public void distinceTest(){
         List<AppDevice> appDevices = appDeviceMapper.selectTestDistince();
         Assert.assertFalse(null != appDevices);
+    }
+
+    @Test
+    public void iptest() throws UnknownHostException {
+        InetAddress address = InetAddress.getLocalHost();
+        String hostName = address.getHostName();
+        Long workerId = Long.valueOf(hostName.replace(hostName.replaceAll("\\d+$", ""), ""));
     }
 
 }

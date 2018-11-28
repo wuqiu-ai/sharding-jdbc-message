@@ -20,6 +20,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -92,7 +93,6 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setActualDataNodes("ds${0..3}.push_message");
 
         DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
-        defaultKeyGenerator.setWorkerId(21L);
         orderTableRuleConfig.setKeyGenerator(defaultKeyGenerator);
         orderTableRuleConfig.setKeyGeneratorColumnName("id");
 
@@ -146,8 +146,10 @@ public class ShardingDruidDataSourceAutoConfig{
         // 配置分库 + 分表策略
         MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
                 Arrays.asList("ds0","ds1","ds2","ds3"));
+        Properties properties = new Properties();
+        properties.setProperty("sql.show","true");
         DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration,
-                new HashMap<>(),new Properties());
+                new HashMap<>(),properties);
         return dataSource;
     }
 
@@ -160,11 +162,9 @@ public class ShardingDruidDataSourceAutoConfig{
         return sqlSessionFactoryBean;
     }
 
-//    @Bean(name = "mapperScannerConfigurer")
-//    public MapperScannerConfigurer mapperScannerConfigurer(){
-//        MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
-//        mapperScannerConfigurer.setBasePackage("com.fly.mapper");
-//        mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");
-//        return mapperScannerConfigurer;
-//    }
+    @Bean("shardingJdbcTemplate")
+    public JdbcTemplate shardingJdbcTemplate() throws SQLException {
+        return new JdbcTemplate(dataSource());
+    }
+
 }
