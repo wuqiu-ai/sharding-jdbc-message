@@ -170,7 +170,21 @@
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
             <version>3.0.0</version>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.codehaus.groovy</groupId>-->
+                    <!--<artifactId>groovy</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <classifier>indy</classifier>
+            <version>2.6.0-alpha-4</version>
+        </dependency>
+
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration</artifactId>

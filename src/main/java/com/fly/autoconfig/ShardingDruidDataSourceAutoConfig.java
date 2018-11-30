@@ -10,6 +10,7 @@ import io.shardingsphere.core.keygen.DefaultKeyGenerator;
 import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
 import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
+import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -143,17 +144,17 @@ public class ShardingDruidDataSourceAutoConfig{
 
         //数据治理功能
         // 配置注册中心
-        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
-        regConfig.setServerLists("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
-        regConfig.setNamespace("sharding-sphere-orchestration");
+//        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
+//        regConfig.setServerLists("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
+//        regConfig.setNamespace("sharding-sphere-orchestration");
         // 配置数据治理
-        OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
+//        OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
 
         Properties properties = new Properties();
         properties.setProperty("sql.show","true");
 
-        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(
-                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties, orchConfig);
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
 
 
 //        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);

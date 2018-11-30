@@ -7,7 +7,7 @@
 <configuration scan="true" scanPeriod="60 seconds" debug="true">
     <!-- 定义变量LOG_HOME用于配置log日志生成的项目主目录  -->
     <!-- project.name 通过maven打包的方式动态替换 -->
-    <property name="LOG_HOME" value="/home/dxy/sharding/logs/"/>
+    <property name="LOG_HOME" value="./logs/"/>
     <!--日志文件保留天数-->
     <property name="LOG_MAX_HISTORY" value="30"/>
     <!--系统当天日志文件保存路径-->

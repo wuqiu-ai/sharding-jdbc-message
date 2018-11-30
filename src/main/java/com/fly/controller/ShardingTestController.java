@@ -24,12 +24,11 @@ public class ShardingTestController {
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
     @Qualifier("shardingJdbcTemplate")
-    @Autowired
+    @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/test")
     public String test() throws InterruptedException {
-        Thread.sleep(300l);
         return "ok";
     }
 
@@ -39,6 +38,7 @@ public class ShardingTestController {
                 .orElseThrow( () -> new IllegalArgumentException("sql不能为空"));
         StringTokenizer st = new StringTokenizer(sql," ,?.!:\"\"''\n#");
         String firstToken = st.nextToken();
+        LOGGER.debug("firstToken:{} sql:{}",firstToken,sql);
         if("insert".equalsIgnoreCase(firstToken)){
             int count = jdbcTemplate.update(sql);
             if(count == 0){
