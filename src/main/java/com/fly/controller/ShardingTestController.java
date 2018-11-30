@@ -28,7 +28,8 @@ public class ShardingTestController {
     private JdbcTemplate jdbcTemplate;
 
     @GetMapping("/test")
-    public String test(){
+    public String test() throws InterruptedException {
+        Thread.sleep(300l);
         return "ok";
     }
 
