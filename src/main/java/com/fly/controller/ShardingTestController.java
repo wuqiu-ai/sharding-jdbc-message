@@ -1,15 +1,15 @@
 package com.fly.controller;
 
-import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
 
@@ -23,7 +23,7 @@ public class ShardingTestController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
-    @Qualifier("shardingJdbcTemplate")
+    @Qualifier("fourJdbcTemplate")
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 
@@ -40,23 +40,13 @@ public class ShardingTestController {
         String firstToken = st.nextToken();
         LOGGER.debug("firstToken:{} sql:{}",firstToken,sql);
         if("insert".equalsIgnoreCase(firstToken)){
-            int count = jdbcTemplate.update(sql);
-            if(count == 0){
-                throw new IllegalArgumentException("insert fail");
-            }
+            jdbcTemplate.update(sql);
         }else if("update".equalsIgnoreCase(firstToken)){
-            int count = jdbcTemplate.update(sql);
-            if(count == 0){
-                throw new IllegalArgumentException("insert fail");
-            }
+            jdbcTemplate.update(sql);
         }else if("delete".equalsIgnoreCase(firstToken)){
-            int count = jdbcTemplate.update(sql);
-            if(count == 0){
-                throw new IllegalArgumentException("insert fail");
-            }
+            jdbcTemplate.update(sql);
         }else if("select".equalsIgnoreCase(firstToken)){
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            LOGGER.info("select list:{}",JSON.toJSONString(list));
+            jdbcTemplate.queryForList(sql);
         }else
             throw new IllegalArgumentException("不支持sql");
         return "ok";

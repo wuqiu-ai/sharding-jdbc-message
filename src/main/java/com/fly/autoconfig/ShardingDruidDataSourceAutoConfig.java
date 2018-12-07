@@ -2,16 +2,16 @@ package com.fly.autoconfig;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.dxy.keygen.shardingjdbc.ShardingDefaultKeyGenerator;
+import com.fly.algorithm.MyPreciseShardingAlgorithm;
 import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
-import io.shardingsphere.orchestration.config.OrchestrationConfiguration;
-import io.shardingsphere.orchestration.reg.api.RegistryCenterConfiguration;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
-import io.shardingsphere.shardingjdbc.orchestration.api.OrchestrationShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -114,7 +114,6 @@ public class ShardingDruidDataSourceAutoConfig{
     public DataSource dataSource() throws SQLException {
         // 配置真实数据源
         Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("main",mainDataSource());
         dataSourceMap.put("ds0",ds0DataSource());
         dataSourceMap.put("ds1",ds1DataSource());
         dataSourceMap.put("ds2",ds2DataSource());
@@ -125,8 +124,8 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setLogicTable("push_message");
         orderTableRuleConfig.setActualDataNodes("ds${0..3}.push_message");
 
-        DefaultKeyGenerator defaultKeyGenerator = new DefaultKeyGenerator();
-        orderTableRuleConfig.setKeyGenerator(defaultKeyGenerator);
+        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
         orderTableRuleConfig.setKeyGeneratorColumnName("id");
 
         // 配置分库 + 分表策略
@@ -137,52 +136,135 @@ public class ShardingDruidDataSourceAutoConfig{
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 
-        //默认数据源
-        shardingRuleConfig.setDefaultDataSourceName("main");
-        // 获取数据源对象
-//        DataSource dataSource = ShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties());
-
-        //数据治理功能
-        // 配置注册中心
-//        RegistryCenterConfiguration regConfig = new RegistryCenterConfiguration();
-//        regConfig.setServerLists("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
-//        regConfig.setNamespace("sharding-sphere-orchestration");
-        // 配置数据治理
-//        OrchestrationConfiguration orchConfig = new OrchestrationConfiguration("orchestration-sharding-data-source", regConfig, false);
-
         Properties properties = new Properties();
         properties.setProperty("sql.show","true");
+        properties.setProperty("max.connections.size.per.query","200");
+        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
 
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(
                 dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
-
-
-//        DataSource dataSource = OrchestrationShardingDataSourceFactory.createDataSource(dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), new Properties(), orchConfig);
         return dataSource;
     }
 
     /**
-     * 读写分离模式
+     * 2个分片数据源
      * @return
      * @throws SQLException
      */
     @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
     public DataSource dataSource1() throws SQLException {
+//        // 配置真实数据源
+//        Map<String, DataSource> dataSourceMap = new HashMap<>();
+//        dataSourceMap.put("main",mainDataSource());
+//
+//        // 配置分库 + 分表策略
+//        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
+//                Arrays.asList("main"));
+//        Properties properties = new Properties();
+//        properties.setProperty("sql.show","true");
+//        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration,
+//                new HashMap<>(),properties);
+
         // 配置真实数据源
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("main",mainDataSource());
-        dataSourceMap.put("ds0",ds0DataSource());
-        dataSourceMap.put("ds1",ds1DataSource());
-        dataSourceMap.put("ds2",ds2DataSource());
-        dataSourceMap.put("ds3",ds3DataSource());
 
-        // 配置分库 + 分表策略
-        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
-                Arrays.asList("ds0","ds1","ds2","ds3"));
+        // 配置Order表规则
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+        orderTableRuleConfig.setLogicTable("push_message");
+        orderTableRuleConfig.setActualDataNodes("main.push_message");
+
+        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+
+        // 配置分片规则
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+
+        //默认数据源
+        shardingRuleConfig.setDefaultDataSourceName("main");
+
         Properties properties = new Properties();
         properties.setProperty("sql.show","true");
-        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration,
-                new HashMap<>(),properties);
+        properties.setProperty("max.connections.size.per.query","200");
+        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
+        return dataSource;
+    }
+
+    /**
+     * 2个分片的分库分表
+     * @return
+     * @throws SQLException
+     */
+    @Bean(name = "dataSource3",autowire = Autowire.BY_NAME)
+    public DataSource dataSource3() throws SQLException {
+        // 配置真实数据源
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds0",ds0DataSource());
+        dataSourceMap.put("ds1",ds1DataSource());
+
+        // 配置Order表规则
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+        orderTableRuleConfig.setLogicTable("push_message");
+        orderTableRuleConfig.setActualDataNodes("ds${0..1}.push_message2");
+
+        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+
+        // 配置分库 + 分表策略
+        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceId", "ds${traceId % 2}"));
+
+        // 配置分片规则
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        Properties properties = new Properties();
+        properties.setProperty("sql.show","true");
+        properties.setProperty("max.connections.size.per.query","200");
+        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
+        return dataSource;
+    }
+
+    /**
+     * 单库多表
+     * @return
+     * @throws SQLException
+     */
+    @Bean(name = "dataSource4",autowire = Autowire.BY_NAME)
+    public DataSource dataSource4() throws SQLException {
+        // 配置真实数据源
+        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("ds0",ds0DataSource());
+
+        // 配置Order表规则
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
+        orderTableRuleConfig.setLogicTable("push_message");
+        orderTableRuleConfig.setActualDataNodes("ds0.push_message,ds0.push_message2,ds0.push_message3,ds0.push_message4");
+
+        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+
+        // 配置分库 + 分表策略
+        MyPreciseShardingAlgorithm myPreciseShardingAlgorithm = new MyPreciseShardingAlgorithm();
+        StandardShardingStrategyConfiguration standardStrategy =
+                new StandardShardingStrategyConfiguration("traceId",myPreciseShardingAlgorithm);
+        orderTableRuleConfig.setTableShardingStrategyConfig(standardStrategy);
+
+        // 配置分片规则
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+        Properties properties = new Properties();
+        properties.setProperty("sql.show","true");
+        properties.setProperty("max.connections.size.per.query","200");
+        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
+        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
         return dataSource;
     }
 
@@ -195,9 +277,25 @@ public class ShardingDruidDataSourceAutoConfig{
         return sqlSessionFactoryBean;
     }
 
-    @Bean("shardingJdbcTemplate")
+    @Bean("fourJdbcTemplate")
     public JdbcTemplate shardingJdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource());
+    }
+
+    @Bean("singleJdbcTemplate")
+    public JdbcTemplate singleJdbcTemplate() throws SQLException {
+        return new JdbcTemplate(dataSource1());
+    }
+
+    @Bean("twoJdbcTemplate")
+    public JdbcTemplate twoJdbcTemplate() throws SQLException {
+        return new JdbcTemplate(dataSource3());
+    }
+
+
+    @Bean("singleDatabaseMultipleTableJdbcTemplate")
+    public JdbcTemplate singleDatabaseMultipleTableJdbcTemplate() throws SQLException {
+        return new JdbcTemplate(dataSource4());
     }
 
 }
