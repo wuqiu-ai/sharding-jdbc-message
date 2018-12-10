@@ -38,7 +38,7 @@
     <!--有缓存，不立即输出-->
     <appender name="file-sys" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>DEBUG</level>
+            <level>INFO</level>
         </filter>
         <File>${LOG_SYS_HOME}</File>
         <!-- rollingPolicy滚动策略
@@ -79,6 +79,5 @@
 
     <root level="info">
         <appender-ref ref="AsyncFile"/>
-        <appender-ref ref="AsynConsole"/>
     </root>
 </configuration>

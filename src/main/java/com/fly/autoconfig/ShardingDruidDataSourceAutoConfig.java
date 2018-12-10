@@ -8,8 +8,10 @@ import io.shardingsphere.api.config.MasterSlaveRuleConfiguration;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
 import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
+import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
 import io.shardingsphere.core.keygen.DefaultKeyGenerator;
+import io.shardingsphere.core.routing.strategy.none.NoneShardingStrategy;
 import io.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -147,24 +149,12 @@ public class ShardingDruidDataSourceAutoConfig{
     }
 
     /**
-     * 2个分片数据源
+     * 1个分片数据源
      * @return
      * @throws SQLException
      */
     @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
     public DataSource dataSource1() throws SQLException {
-//        // 配置真实数据源
-//        Map<String, DataSource> dataSourceMap = new HashMap<>();
-//        dataSourceMap.put("main",mainDataSource());
-//
-//        // 配置分库 + 分表策略
-//        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
-//                Arrays.asList("main"));
-//        Properties properties = new Properties();
-//        properties.setProperty("sql.show","true");
-//        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration,
-//                new HashMap<>(),properties);
-
         // 配置真实数据源
         Map<String, DataSource> dataSourceMap = new HashMap<>();
         dataSourceMap.put("main",mainDataSource());
@@ -177,13 +167,12 @@ public class ShardingDruidDataSourceAutoConfig{
         ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
         orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
         orderTableRuleConfig.setKeyGeneratorColumnName("id");
-
         // 配置分片规则
+        NoneShardingStrategyConfiguration noneShardingStrategyConfiguration = new NoneShardingStrategyConfiguration();
+        orderTableRuleConfig.setTableShardingStrategyConfig(noneShardingStrategyConfiguration);
+
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-
-        //默认数据源
-        shardingRuleConfig.setDefaultDataSourceName("main");
 
         Properties properties = new Properties();
         properties.setProperty("sql.show","true");
@@ -296,6 +285,16 @@ public class ShardingDruidDataSourceAutoConfig{
     @Bean("singleDatabaseMultipleTableJdbcTemplate")
     public JdbcTemplate singleDatabaseMultipleTableJdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource4());
+    }
+
+    /**
+     * jdbc 测试
+     * @return
+     * @throws SQLException
+     */
+    @Bean("jdbcTemplate")
+    public JdbcTemplate jdbcTemplate() throws SQLException {
+        return new JdbcTemplate(mainDataSource());
     }
 
 }
