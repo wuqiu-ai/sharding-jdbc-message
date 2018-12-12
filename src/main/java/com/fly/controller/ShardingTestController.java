@@ -23,7 +23,7 @@ public class ShardingTestController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
-    @Qualifier("singleJdbcTemplate")
+    @Qualifier("fourJdbcTemplate")
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 

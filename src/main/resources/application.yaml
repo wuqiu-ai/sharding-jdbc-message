@@ -22,6 +22,10 @@ dxy:
       url: jdbc:mysql://192.168.202.137:3306/push_message_04
       username: pangpeijie
       password: shagNuwiUs@utdeerUmrunwenosix7
+    mycat:
+      url: jdbc:mysql://192.168.202.137:3307/push_mycat
+      username: push
+      password: Abc123456987
 
 #dxy:
 #  datasource:

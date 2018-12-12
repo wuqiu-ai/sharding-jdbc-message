@@ -78,6 +78,7 @@
     </appender>
 
     <root level="info">
+        <appender-ref ref="AsynConsole"/>
         <appender-ref ref="AsyncFile"/>
     </root>
 </configuration>

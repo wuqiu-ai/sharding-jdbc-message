@@ -129,6 +129,12 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceId", "ds${traceId % 4}"));
         //orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
 
+        //表push_action_tracing
+        TableRuleConfiguration pushTracing = new TableRuleConfiguration();
+        pushTracing.setLogicTable("push_action_tracing");
+        pushTracing.setActualDataNodes("ds${0..3}.push_action_tracing");
+        pushTracing.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds${id % 4}"));
+
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
