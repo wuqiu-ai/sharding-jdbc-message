@@ -1,5 +1,6 @@
 debug: false
 
+
 dxy:
   datasource:
     main-data-source:
@@ -62,3 +63,6 @@ logging:
         dao: debug
 server:
   port: 7777
+spring:
+  profiles:
+    active: dev
