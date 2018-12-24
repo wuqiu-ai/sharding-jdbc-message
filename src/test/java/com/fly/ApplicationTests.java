@@ -1,26 +1,17 @@
 package com.fly;
 
-import com.dxy.keygen.utils.OrderNoGeneratorUtils;
 import com.fly.dao.AppDeviceMapper;
 import com.fly.domain.AppDevice;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * @author: peijiepang
@@ -35,17 +26,36 @@ public class ApplicationTests {
     @Autowired
     private AppDeviceMapper appDeviceMapper;
 
+    /**
+     * 正常sql测试
+     */
     @Test
     public void appDeviceTest(){
         AppDevice appDevice = appDeviceMapper.selectByPrimaryKey(200);
         Assert.assertFalse(null != appDevice);
     }
 
+    /**
+     * testDistinct 测试
+     */
     @Test
-    public void iptest() throws UnknownHostException {
-        InetAddress address = InetAddress.getLocalHost();
-        String hostName = address.getHostName();
-        Long workerId = Long.valueOf(hostName.replace(hostName.replaceAll("\\d+$", ""), ""));
+    public void testDistinct(){
+        List<AppDevice> list = appDeviceMapper.selectTestDistince();
+        Assert.assertFalse(null != list);
     }
 
+    /**
+     * testUnion 测试
+     */
+    @Test
+    public void testUnion(){
+        List<AppDevice> list = appDeviceMapper.selectTestUnion();
+        Assert.assertFalse(null == list);
+    }
+
+    @Test
+    public void selectTestScheme(){
+        List<AppDevice> list = appDeviceMapper.selectTestScheme();
+        Assert.assertFalse(null != list);
+    }
 }

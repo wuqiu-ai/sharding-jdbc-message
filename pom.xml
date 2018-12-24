@@ -22,11 +22,11 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>com.baidu.fsg</groupId>
-            <artifactId>uid-generator</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.baidu.fsg</groupId>-->
+            <!--<artifactId>uid-generator</artifactId>-->
+            <!--<version>1.0.0-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -192,20 +192,20 @@
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0.M1</version>
         </dependency>
 
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0.M1</version>
         </dependency>
 
         <!--若使用zookeeper, 请加入下面Maven坐标-->
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-            <version>3.0.0</version>
+            <version>3.1.0.M1</version>
         </dependency>
 
 
