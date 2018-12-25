@@ -122,19 +122,14 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setLogicTable("push_message");
         orderTableRuleConfig.setActualDataNodes("ds${0..3}.push_message");
 
+        //分布式主键
+        orderTableRuleConfig.setKeyGeneratorColumnName("id");
         ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
         orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
-        orderTableRuleConfig.setKeyGeneratorColumnName("id");
 
-        // 配置分库 + 分表策略
-        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceId", "ds${traceId % 4}"));
-        //orderTableRuleConfig.setTableShardingStrategyConfig(new InlineShardingStrategyConfiguration("order_id", "t_order${order_id % 2}"));
-
-        //表push_action_tracing
-        TableRuleConfiguration pushTracing = new TableRuleConfiguration();
-        pushTracing.setLogicTable("push_action_tracing");
-        pushTracing.setActualDataNodes("ds${0..3}.push_action_tracing");
-        pushTracing.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("id", "ds${id % 4}"));
+        // 配置分库策略
+        orderTableRuleConfig.setDatabaseShardingStrategyConfig(
+                new InlineShardingStrategyConfiguration("traceid", "ds${traceid%4}"));
 
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -208,7 +203,7 @@ public class ShardingDruidDataSourceAutoConfig{
         orderTableRuleConfig.setKeyGeneratorColumnName("id");
 
         // 配置分库 + 分表策略
-        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceId", "ds${traceId % 2}"));
+        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceid", "ds${traceid % 2}"));
 
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
@@ -245,8 +240,8 @@ public class ShardingDruidDataSourceAutoConfig{
         // 配置分库 + 分表策略
         MyPreciseShardingAlgorithm myPreciseShardingAlgorithm = new MyPreciseShardingAlgorithm();
         StandardShardingStrategyConfiguration standardStrategy =
-                new StandardShardingStrategyConfiguration("traceId",myPreciseShardingAlgorithm);
-        orderTableRuleConfig.setTableShardingStrategyConfig(standardStrategy);
+                new StandardShardingStrategyConfiguration("traceid",myPreciseShardingAlgorithm);
+        orderTableRuleConfig.setDatabaseShardingStrategyConfig(standardStrategy);
 
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();

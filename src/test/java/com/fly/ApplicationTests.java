@@ -1,7 +1,9 @@
 package com.fly;
 
 import com.fly.dao.AppDeviceMapper;
+import com.fly.dao.PushMessageMapper;
 import com.fly.domain.AppDevice;
+import com.fly.domain.PushMessage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +28,9 @@ public class ApplicationTests {
 
     @Autowired
     private AppDeviceMapper appDeviceMapper;
+
+    @Autowired
+    private PushMessageMapper pushMessageMapper;
 
     /**
      * 正常sql测试
@@ -57,5 +63,24 @@ public class ApplicationTests {
     public void selectTestScheme(){
         List<AppDevice> list = appDeviceMapper.selectTestScheme();
         Assert.assertFalse(null != list);
+    }
+
+    @Test
+    public void testInsert(){
+        PushMessage pushMessage = new PushMessage();
+        pushMessage.setTraceid(212121L);
+        pushMessage.setAppversion("asdas");
+        pushMessage.setDeviceplatform("asdad");
+        pushMessage.setDevicetoken("asdadssa");
+        pushMessage.setJobid("asdada");
+        pushMessage.setOsversion("asdada");
+        pushMessage.setSendtime(new Date());
+        pushMessage.setStatus("asda");
+        pushMessage.setUserid("asdadasda");
+        pushMessage.setCreatetime(new Date());
+        pushMessage.setClicktime(new Date());
+        pushMessage.setSendtime(new Date());
+        pushMessage.setModifytime(new Date());
+        pushMessageMapper.insert(pushMessage);
     }
 }
