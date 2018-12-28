@@ -39,6 +39,7 @@ public class ShardingTestController {
         StringTokenizer st = new StringTokenizer(sql," ,?.!:\"\"''\n#");
         String firstToken = st.nextToken();
         LOGGER.debug("firstToken:{} sql:{}",firstToken,sql);
+
         if("insert".equalsIgnoreCase(firstToken)){
             jdbcTemplate.update(sql);
         }else if("update".equalsIgnoreCase(firstToken)){

@@ -11,6 +11,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis.version>3.4.6</mybatis.version>
+        <sharding.version>3.1.0.M1</sharding.version>
     </properties>
 
 
@@ -192,20 +193,20 @@
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
-            <version>3.1.0.M1</version>
+            <version>${sharding.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>3.1.0.M1</version>
+            <version>${sharding.version}</version>
         </dependency>
 
         <!--若使用zookeeper, 请加入下面Maven坐标-->
         <dependency>
             <groupId>io.shardingsphere</groupId>
             <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-            <version>3.1.0.M1</version>
+            <version>${sharding.version}</version>
         </dependency>
 
 
