@@ -4,6 +4,10 @@ import com.fly.dao.AppDeviceMapper;
 import com.fly.dao.PushMessageMapper;
 import com.fly.domain.AppDevice;
 import com.fly.domain.PushMessage;
+import groovy.lang.Closure;
+import groovy.util.Expando;
+import io.shardingsphere.api.algorithm.sharding.PreciseShardingValue;
+import io.shardingsphere.core.util.InlineExpressionParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,4 +87,15 @@ public class ApplicationTests {
         pushMessage.setModifytime(new Date());
         pushMessageMapper.insert(pushMessage);
     }
+
+    @Test
+    public void testInline(){
+        Closure<?> closure = new InlineExpressionParser("ds${traceid%4}").evaluateClosure();
+        Closure<?> result = closure.rehydrate(new Expando(), null, null);
+        result.setResolveStrategy(Closure.DELEGATE_ONLY);
+        PreciseShardingValue shardingValue = new PreciseShardingValue("push_message","traceId",342342);
+        result.setProperty(shardingValue.getColumnName().toLowerCase(), shardingValue.getValue());
+        System.out.println("--------:"+result.call().toString());
+    }
+
 }
