@@ -129,7 +129,7 @@ public class ShardingDruidDataSourceAutoConfig{
 
         // 配置分库策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(
-                new InlineShardingStrategyConfiguration("traceId", "ds${traceId%4}"));
+                new InlineShardingStrategyConfiguration("traceid", "ds${traceid%4}"));
 
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
