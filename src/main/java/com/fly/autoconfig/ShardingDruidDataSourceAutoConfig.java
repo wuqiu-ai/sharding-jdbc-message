@@ -4,8 +4,8 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import com.dxy.keygen.shardingjdbc.ShardingDefaultKeyGenerator;
 import com.fly.algorithm.MyPreciseShardingAlgorithm;
-import io.shardingsphere.api.config.rule.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.rule.TableRuleConfiguration;
+import io.shardingsphere.api.config.ShardingRuleConfiguration;
+import io.shardingsphere.api.config.TableRuleConfiguration;
 import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
 import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
@@ -129,7 +129,7 @@ public class ShardingDruidDataSourceAutoConfig{
 
         // 配置分库策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(
-                new InlineShardingStrategyConfiguration("traceid", "ds${traceid%4}"));
+                new InlineShardingStrategyConfiguration("traceId", "ds${traceId%4}"));
 
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
