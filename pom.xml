@@ -12,6 +12,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis.version>3.4.6</mybatis.version>
         <sharding.version>3.0.0</sharding.version>
+        <disruptor.version>3.3.0</disruptor.version>
     </properties>
 
 
@@ -28,6 +29,11 @@
             <!--<artifactId>uid-generator</artifactId>-->
             <!--<version>1.0.0-SNAPSHOT</version>-->
         <!--</dependency>-->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -209,6 +215,11 @@
             <version>${sharding.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.dxy.framework</groupId>
+            <artifactId>dxy-framework-keygen-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

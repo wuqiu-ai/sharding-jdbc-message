@@ -1,5 +1,6 @@
 package com.fly.controller;
 
+import com.dxy.keygen.core.SnowFlakeKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,10 @@ public class ShardingTestController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
-    @Qualifier("mycatTemplate")
+    @Autowired
+    private SnowFlakeKeyGenerator snowFlakeKeyGenerator;
+
+    @Qualifier("fourJdbcTemplate")
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 
@@ -52,4 +56,12 @@ public class ShardingTestController {
             throw new IllegalArgumentException("不支持sql");
         return "ok";
     }
+
+    @GetMapping("keygen")
+    public void keygen(){
+        while (true){
+            LOGGER.info("id:{}",snowFlakeKeyGenerator.generateKey());
+        }
+    }
+
 }

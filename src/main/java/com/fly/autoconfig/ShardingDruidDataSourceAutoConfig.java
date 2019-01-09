@@ -2,6 +2,10 @@ package com.fly.autoconfig;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+import com.dxy.keygen.core.DefaultKeyGenerator;
+import com.dxy.keygen.core.SnowFlakeKeyGenerator;
+import com.dxy.keygen.core.config.MachineConfig;
+import com.dxy.keygen.core.config.ZookeeperMachineConfig;
 import com.dxy.keygen.shardingjdbc.ShardingDefaultKeyGenerator;
 import com.fly.algorithm.MyPreciseShardingAlgorithm;
 import io.shardingsphere.api.config.ShardingRuleConfiguration;
@@ -38,6 +42,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @EnableAutoConfiguration
 @MapperScan("com.fly.dao")
 public class ShardingDruidDataSourceAutoConfig{
+
+
+    @Bean
+    public SnowFlakeKeyGenerator snowFlakeKeyGenerator(){
+        MachineConfig machineConfig = new ZookeeperMachineConfig();
+        ((ZookeeperMachineConfig) machineConfig).setConnectionInfo("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
+        ((ZookeeperMachineConfig) machineConfig).setEnv("dev");
+        ((ZookeeperMachineConfig) machineConfig).setBusinessCode("test");
+//        MachineConfig machineConfig = new SystemPropertyMachineConfig();
+        SnowFlakeKeyGenerator keyGenerator = new DefaultKeyGenerator(machineConfig);
+        return keyGenerator;
+    }
 
     @Primary
     @Bean(name = "mainDataSource",autowire = Autowire.BY_NAME)
