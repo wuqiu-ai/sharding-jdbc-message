@@ -1,2 +1,22 @@
 test:
   ppj
+
+com:
+  dxy:
+    keygen:
+      enabled: true #开关,必填项，默认关
+      machine-type: ZOOKEEPER #机器号和机房号生成策略，支持系统启动参数-SYSTEM_PROPERTY和zk主动生成-ZOOKEEPER 必填项
+      order-no-generator-type: DEFAULT #订单号生成策略，支持雪花算法-DEFAULT和时间型-TIMESTAMP 选填项，如果不填则不能使用订单号生成器
+      zookeeper-config:
+        connection-info: zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181 #machine-type为zookeeper时，需要填写zk的连接信息
+#        business-code: DEMO #业务编码,选填项，如果不填，默认取系统参数中的pk.project.name作为优选配置
+#        env: DEV/TEST/PRE/PUB #环境标识,选填项,为了解决一个业务不同的环境使用了同一套zookeeper
+
+
+
+#com:
+#  dxy:
+#    keygen:
+#      enabled: true #开关,必填项，默认关
+#      machine-type: SYSTEM_PROPERTY #机器号和机房号生成策略，支持系统启动参数-SYSTEM_PROPERTY和zk主动生成-ZOOKEEPER 必填项
+#      order-no-generator-type: DEFAULT #订单号生成策略，支持雪花算法-DEFAULT和时间型-TIMESTAMP 选填项，如果不填则不能使用订单号生成器

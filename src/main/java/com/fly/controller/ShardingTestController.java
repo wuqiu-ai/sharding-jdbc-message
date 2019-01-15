@@ -1,5 +1,7 @@
 package com.fly.controller;
 
+import com.dxy.keygen.core.KeyGenerator;
+import com.dxy.keygen.core.OrderNoGenerator;
 import com.dxy.keygen.core.SnowFlakeKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +26,17 @@ public class ShardingTestController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
+    /**
+     * 分布式主键生成器
+     */
     @Autowired
-    private SnowFlakeKeyGenerator snowFlakeKeyGenerator;
+    private KeyGenerator keyGenerator;
+
+    /**
+     * 订单号生成器
+     */
+    @Autowired()
+    private OrderNoGenerator orderNoGenerator;
 
     @Qualifier("fourJdbcTemplate")
     @Autowired(required = false)
@@ -60,7 +71,8 @@ public class ShardingTestController {
     @GetMapping("keygen")
     public void keygen(){
         while (true){
-            LOGGER.info("id:{}",snowFlakeKeyGenerator.generateKey());
+            LOGGER.info("id:{}",keyGenerator.generateKey());
+            LOGGER.info("orderNo:{}",orderNoGenerator.generateOrderNo());
         }
     }
 
