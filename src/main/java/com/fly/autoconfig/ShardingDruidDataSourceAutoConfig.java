@@ -105,12 +105,21 @@ public class ShardingDruidDataSourceAutoConfig{
         //打开后，增强timeBetweenEvictionRunsMillis的周期性连接检查，minIdle内的空闲连接，每次检查强制验证连接有效性. 参考：https://github.com/alibaba/druid/wiki/KeepAlive_cn
         dataSource.setKeepAlive(true);
 
+        //是否缓存preparedStatement，也就是PSCachef。使用sharding-jdbc的时候，一定要打开该操作，用于缓存sql解析器的缓存
+        dataSource.setPoolPreparedStatements(true);
+
         //连接泄露检查，打开removeAbandoned功能 , 连接从连接池借出后，长时间不归还，将触发强制回连接。回收周期随timeBetweenEvictionRunsMillis进行，如果连接为从连接池借出状态，并且未执行任何sql，并且从借出时间起已超过removeAbandonedTimeout时间，则强制归还连接到连接池中。
         dataSource.setRemoveAbandoned(true);
         //超时时间，秒
         dataSource.setRemoveAbandonedTimeout(80);
         //关闭abanded连接时输出错误日志，这样出现连接泄露时可以通过错误日志定位忘记关闭连接的位置
         dataSource.setLogAbandoned(true);
+
+        //通过connectProperties属性来打开mergeSql功能；慢SQL记录
+        Properties properties = new Properties();
+        properties.setProperty("druid.stat.mergeSql","true");
+        properties.setProperty("druid.stat.slowSqlMillis","5000");
+        dataSource.setConnectProperties(properties);
         return dataSource;
     }
 
