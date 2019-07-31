@@ -39,9 +39,9 @@ public class JettyConfig {
         // connections
         final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
         //默认最大线程连接数200
-        threadPool.setMaxThreads(200);
+        threadPool.setMaxThreads(500);
         //默认最小线程连接数8
-        threadPool.setMinThreads(50);
+        threadPool.setMinThreads(100);
         //默认线程最大空闲时间60000ms
         threadPool.setIdleTimeout(60000);
     }

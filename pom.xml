@@ -204,22 +204,9 @@
         </dependency>
 
         <dependency>
-            <groupId>io.shardingsphere</groupId>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>sharding-jdbc-core</artifactId>
-            <version>${sharding.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-jdbc-orchestration</artifactId>
-            <version>${sharding.version}</version>
-        </dependency>
-
-        <!--若使用zookeeper, 请加入下面Maven坐标-->
-        <dependency>
-            <groupId>io.shardingsphere</groupId>
-            <artifactId>sharding-orchestration-reg-zookeeper-curator</artifactId>
-            <version>${sharding.version}</version>
+            <version>4.0.0-RC1</version>
         </dependency>
 
         <dependency>

@@ -7,12 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Types;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
 
@@ -26,26 +29,21 @@ public class ShardingTestController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ShardingTestController.class);
 
-    /**
-     * 分布式主键生成器
-     */
-    @Autowired
-    private KeyGenerator keyGenerator;
-
-    /**
-     * 订单号生成器
-     */
-    @Autowired()
-    private OrderNoGenerator orderNoGenerator;
+//    /**
+//     * 分布式主键生成器
+//     */
+//    @Autowired
+//    private KeyGenerator keyGenerator;
+//
+//    /**
+//     * 订单号生成器
+//     */
+//    @Autowired()
+//    private OrderNoGenerator orderNoGenerator;
 
     @Qualifier("fourJdbcTemplate")
     @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
-
-    @GetMapping("/test")
-    public String test() throws InterruptedException {
-        return "ok";
-    }
 
     @PostMapping("/sharding/sqltest")
     public String sqltest(@RequestParam("sql")String sql){
@@ -68,12 +66,25 @@ public class ShardingTestController {
         return "ok";
     }
 
-    @GetMapping("keygen")
-    public void keygen(){
-        while (true){
-            LOGGER.info("id:{}",keyGenerator.generateKey());
-            LOGGER.info("orderNo:{}",orderNoGenerator.generateOrderNo());
+    @PostMapping("/message/test")
+    public String messageTest(@RequestParam("traceId") Long traceId){
+        String selectSql = "SELECT * FROM push_message WHERE traceId = ?";
+        Object[] args = { traceId };
+        int[] argTypes = { Types.BIGINT };
+        Map<String, Object> result = null;
+        try {
+            result = jdbcTemplate.queryForMap(selectSql,args,argTypes);
+        }catch (DataAccessException ex){ }
+        if(null == result){
+            return "result is null";
         }
+
+        Object[] update_args = { result.get("id"),traceId };
+        int[] update_argTypes = { Types.BIGINT,Types.BIGINT };
+        String updateSql = "UPDATE push_message SET status='click' WHERE id = ? and traceId = ?";
+        jdbcTemplate.update(updateSql,update_args,update_argTypes);
+        return "ok";
     }
+
 
 }

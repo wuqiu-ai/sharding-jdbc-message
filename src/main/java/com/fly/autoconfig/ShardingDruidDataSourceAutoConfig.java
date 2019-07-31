@@ -2,15 +2,11 @@ package com.fly.autoconfig;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
-import com.dxy.keygen.shardingjdbc.ShardingDefaultKeyGenerator;
-import com.fly.algorithm.MyPreciseShardingAlgorithm;
-import io.shardingsphere.api.config.ShardingRuleConfiguration;
-import io.shardingsphere.api.config.TableRuleConfiguration;
-import io.shardingsphere.api.config.strategy.InlineShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.NoneShardingStrategyConfiguration;
-import io.shardingsphere.api.config.strategy.StandardShardingStrategyConfiguration;
-import io.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -26,7 +22,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author: peijiepang
@@ -38,18 +33,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @EnableAutoConfiguration
 @MapperScan("com.fly.dao")
 public class ShardingDruidDataSourceAutoConfig{
-
-
-//    @Bean
-//    public SnowFlakeKeyGenerator snowFlakeKeyGenerator(){
-//        MachineConfig machineConfig = new ZookeeperMachineConfig();
-//        ((ZookeeperMachineConfig) machineConfig).setConnectionInfo("zk1.host.dxy:2181,zk2.host.dxy:2181,zk3.host.dxy:2181");
-//        ((ZookeeperMachineConfig) machineConfig).setEnv("dev");
-//        ((ZookeeperMachineConfig) machineConfig).setBusinessCode("test");
-////        MachineConfig machineConfig = new SystemPropertyMachineConfig();
-//        SnowFlakeKeyGenerator keyGenerator = new DefaultKeyGenerator(machineConfig);
-//        return keyGenerator;
-//    }
 
     @Primary
     @Bean(name = "mainDataSource",autowire = Autowire.BY_NAME)
@@ -91,8 +74,7 @@ public class ShardingDruidDataSourceAutoConfig{
     public DruidDataSource commonConfigurete(DruidDataSource dataSource){
         dataSource.setInitialSize(10);
         dataSource.setMinIdle(10);
-        dataSource.setMaxActive(200);
-        dataSource.setMaxWait(10000);//配置从连接池获取连接等待超时的时间
+        dataSource.setMaxActive(100);
         //配置间隔多久启动一次DestroyThread，对连接池内的连接才进行一次检测，
         // 单位是毫秒。检测时:1.如果连接空闲并且超过minIdle以外的连接，如果空闲时间超过minEvictableIdleTimeMillis设置的值则直接物理关闭。2.在minIdle以内的不处理。
         dataSource.setTimeBetweenEvictionRunsMillis(60000);
@@ -115,11 +97,11 @@ public class ShardingDruidDataSourceAutoConfig{
         //关闭abanded连接时输出错误日志，这样出现连接泄露时可以通过错误日志定位忘记关闭连接的位置
         dataSource.setLogAbandoned(true);
 
-        //通过connectProperties属性来打开mergeSql功能；慢SQL记录
-        Properties properties = new Properties();
-        properties.setProperty("druid.stat.mergeSql","true");
-        properties.setProperty("druid.stat.slowSqlMillis","5000");
-        dataSource.setConnectProperties(properties);
+//        //通过connectProperties属性来打开mergeSql功能；慢SQL记录
+//        Properties properties = new Properties();
+//        properties.setProperty("druid.stat.mergeSql","true");
+//        properties.setProperty("druid.stat.slowSqlMillis","5000");
+//        dataSource.setConnectProperties(properties);
         return dataSource;
     }
 
@@ -136,17 +118,14 @@ public class ShardingDruidDataSourceAutoConfig{
         dataSourceMap.put("ds1",ds1DataSource());
         dataSourceMap.put("ds2",ds2DataSource());
         dataSourceMap.put("ds3",ds3DataSource());
-        dataSourceMap.put("mainDataSource",mainDataSource());
 
         // 配置Order表规则
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("push_message");
-        orderTableRuleConfig.setActualDataNodes("ds${0..3}.push_message");
+        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("push_message","ds${0..3}.push_message");
 
         //分布式主键
-        orderTableRuleConfig.setKeyGeneratorColumnName("id");
-        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
-        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+//        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+//        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+//        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
 
         // 配置分库策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(
@@ -155,126 +134,83 @@ public class ShardingDruidDataSourceAutoConfig{
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-        shardingRuleConfig.setDefaultDataSourceName("mainDataSource");
 
         Properties properties = new Properties();
-        properties.setProperty("sql.show","true");
-        properties.setProperty("max.connections.size.per.query","200");
-        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
-
+        properties.setProperty("sql.show","false");
+        properties.setProperty("executor.size","100");
+        //执行引擎工作模式-内存模式和限制模式
+        properties.setProperty("max.connections.size.per.query","1");
         DataSource dataSource = ShardingDataSourceFactory.createDataSource(
-                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
+                dataSourceMap, shardingRuleConfig,properties);
         return dataSource;
     }
 
-    /**
-     * 1个分片数据源
-     * @return
-     * @throws SQLException
-     */
-    @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
-    public DataSource dataSource1() throws SQLException {
-        // 配置真实数据源
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("main",mainDataSource());
-
-        // 配置Order表规则
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("push_message");
-        orderTableRuleConfig.setActualDataNodes("main.push_message");
-
-        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
-        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
-        orderTableRuleConfig.setKeyGeneratorColumnName("id");
-        // 配置分片规则
-        NoneShardingStrategyConfiguration noneShardingStrategyConfiguration = new NoneShardingStrategyConfiguration();
-        orderTableRuleConfig.setTableShardingStrategyConfig(noneShardingStrategyConfiguration);
-
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-
-        Properties properties = new Properties();
-        properties.setProperty("sql.show","true");
-        properties.setProperty("max.connections.size.per.query","200");
-        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
-                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
-        return dataSource;
-    }
-
-    /**
-     * 2个分片的分库分表
-     * @return
-     * @throws SQLException
-     */
-    @Bean(name = "dataSource3",autowire = Autowire.BY_NAME)
-    public DataSource dataSource3() throws SQLException {
-        // 配置真实数据源
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds0",ds0DataSource());
-        dataSourceMap.put("ds1",ds1DataSource());
-
-        // 配置Order表规则
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("push_message");
-        orderTableRuleConfig.setActualDataNodes("ds${0..1}.push_message2");
-
-        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
-        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
-        orderTableRuleConfig.setKeyGeneratorColumnName("id");
-
-        // 配置分库 + 分表策略
-        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceid", "ds${traceid % 2}"));
-
-        // 配置分片规则
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-        Properties properties = new Properties();
-        properties.setProperty("sql.show","true");
-        properties.setProperty("max.connections.size.per.query","200");
-        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
-                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
-        return dataSource;
-    }
-
-    /**
-     * 单库多表
-     * @return
-     * @throws SQLException
-     */
-    @Bean(name = "dataSource4",autowire = Autowire.BY_NAME)
-    public DataSource dataSource4() throws SQLException {
-        // 配置真实数据源
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds0",ds0DataSource());
-
-        // 配置Order表规则
-        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration();
-        orderTableRuleConfig.setLogicTable("push_message");
-        orderTableRuleConfig.setActualDataNodes("ds0.push_message,ds0.push_message2,ds0.push_message3,ds0.push_message4");
-
-        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
-        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
-        orderTableRuleConfig.setKeyGeneratorColumnName("id");
-
-        // 配置分库 + 分表策略
-        MyPreciseShardingAlgorithm myPreciseShardingAlgorithm = new MyPreciseShardingAlgorithm();
-        StandardShardingStrategyConfiguration standardStrategy =
-                new StandardShardingStrategyConfiguration("traceid",myPreciseShardingAlgorithm);
-        orderTableRuleConfig.setDatabaseShardingStrategyConfig(standardStrategy);
-
-        // 配置分片规则
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
-        Properties properties = new Properties();
-        properties.setProperty("sql.show","true");
-        properties.setProperty("max.connections.size.per.query","200");
-        properties.setProperty("executor.size",String.valueOf(Runtime.getRuntime().availableProcessors() * 2));
-        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
-                dataSourceMap, shardingRuleConfig, new ConcurrentHashMap(), properties);
-        return dataSource;
-    }
+//    /**
+//     * 1个分片数据源
+//     * @return
+//     * @throws SQLException
+//     */
+//    @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
+//    public DataSource dataSource1() throws SQLException {
+//        // 配置真实数据源
+//        Map<String, DataSource> dataSourceMap = new HashMap<>();
+//        dataSourceMap.put("main",mainDataSource());
+//
+//        // 配置Order表规则
+//        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("push_message","main.push_message");
+////        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+////        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+////        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+//
+//        // 配置分片规则
+//        NoneShardingStrategyConfiguration noneShardingStrategyConfiguration = new NoneShardingStrategyConfiguration();
+//        orderTableRuleConfig.setTableShardingStrategyConfig(noneShardingStrategyConfiguration);
+//
+//        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+//        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+//
+//        Properties properties = new Properties();
+//        properties.setProperty("sql.show","true");
+//        properties.setProperty("executor.size","100");
+//        properties.setProperty("max.connections.size.per.query","1");
+//        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+//                dataSourceMap, shardingRuleConfig, properties);
+//        return dataSource;
+//    }
+//
+//    /**
+//     * 2个分片的分库分表
+//     * @return
+//     * @throws SQLException
+//     */
+//    @Bean(name = "dataSource3",autowire = Autowire.BY_NAME)
+//    public DataSource dataSource3() throws SQLException {
+//        // 配置真实数据源
+//        Map<String, DataSource> dataSourceMap = new HashMap<>();
+//        dataSourceMap.put("ds0",ds0DataSource());
+//        dataSourceMap.put("ds1",ds1DataSource());
+//
+//        // 配置Order表规则
+//        TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("push_message","ds${0..1}.push_message2");
+////
+////        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
+////        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
+////        orderTableRuleConfig.setKeyGeneratorColumnName("id");
+//
+//        // 配置分库 + 分表策略
+//        orderTableRuleConfig.setDatabaseShardingStrategyConfig(new InlineShardingStrategyConfiguration("traceid", "ds${traceid % 2}"));
+//
+//        // 配置分片规则
+//        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+//        shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
+//        Properties properties = new Properties();
+//        properties.setProperty("sql.show","true");
+//        properties.setProperty("executor.size","100");
+//        properties.setProperty("max.connections.size.per.query","1");
+//        DataSource dataSource = ShardingDataSourceFactory.createDataSource(
+//                dataSourceMap, shardingRuleConfig, properties);
+//        return dataSource;
+//    }
 
     @Bean
     @ConfigurationProperties(prefix = "mybatis")
@@ -285,25 +221,31 @@ public class ShardingDruidDataSourceAutoConfig{
         return sqlSessionFactoryBean;
     }
 
+//    @Bean("fourJdbcTemplate")
+//    public JdbcTemplate shardingJdbcTemplate() throws SQLException {
+//        return new JdbcTemplate(dataSource());
+//    }
+//
+//    @Bean("singleJdbcTemplate")
+//    public JdbcTemplate singleJdbcTemplate() throws SQLException {
+//        return new JdbcTemplate(dataSource1());
+//    }
+//
+//    @Bean("twoJdbcTemplate")
+//    public JdbcTemplate twoJdbcTemplate() throws SQLException {
+//        return new JdbcTemplate(dataSource3());
+//    }
+
+//
+//    @Bean("singleDatabaseMultipleTableJdbcTemplate")
+//    public JdbcTemplate singleDatabaseMultipleTableJdbcTemplate() throws SQLException {
+//        return new JdbcTemplate(dataSource4());
+//    }
+
+
     @Bean("fourJdbcTemplate")
     public JdbcTemplate shardingJdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource());
-    }
-
-    @Bean("singleJdbcTemplate")
-    public JdbcTemplate singleJdbcTemplate() throws SQLException {
-        return new JdbcTemplate(dataSource1());
-    }
-
-    @Bean("twoJdbcTemplate")
-    public JdbcTemplate twoJdbcTemplate() throws SQLException {
-        return new JdbcTemplate(dataSource3());
-    }
-
-
-    @Bean("singleDatabaseMultipleTableJdbcTemplate")
-    public JdbcTemplate singleDatabaseMultipleTableJdbcTemplate() throws SQLException {
-        return new JdbcTemplate(dataSource4());
     }
 
     /**
