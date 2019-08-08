@@ -3,9 +3,12 @@ package com.fly.autoconfig;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.api.config.masterslave.MasterSlaveRuleConfiguration;
+import org.apache.shardingsphere.api.config.sharding.KeyGeneratorConfiguration;
 import org.apache.shardingsphere.api.config.sharding.ShardingRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.TableRuleConfiguration;
 import org.apache.shardingsphere.api.config.sharding.strategy.InlineShardingStrategyConfiguration;
+import org.apache.shardingsphere.shardingjdbc.api.MasterSlaveDataSourceFactory;
 import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -123,19 +127,13 @@ public class ShardingDruidDataSourceAutoConfig{
         dataSourceMap.put("ds1",ds1DataSource());
         dataSourceMap.put("ds2",ds2DataSource());
         dataSourceMap.put("ds3",ds3DataSource());
-
         // 配置Order表规则
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("push_message","ds${0..3}.push_message");
-
         //分布式主键
-//        orderTableRuleConfig.setKeyGeneratorColumnName("id");
-//        ShardingDefaultKeyGenerator shardingDefaultKeyGenerator = new ShardingDefaultKeyGenerator();
-//        orderTableRuleConfig.setKeyGenerator(shardingDefaultKeyGenerator);
-
+        orderTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("DxyKeygenerator", "id"));
         // 配置分库策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(
                 new InlineShardingStrategyConfiguration("traceId", "ds${traceId%4}"));
-
         // 配置分片规则
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
@@ -149,6 +147,29 @@ public class ShardingDruidDataSourceAutoConfig{
                 dataSourceMap, shardingRuleConfig,properties);
         return dataSource;
     }
+
+//    /**
+//     * 读写分离
+//     * @return
+//     * @throws SQLException
+//     */
+//    @Bean(name = "dataSource1",autowire = Autowire.BY_NAME)
+//    public DataSource dataSource1() throws SQLException {
+//        // 配置真实数据源
+//        Map<String, DataSource> dataSourceMap = new HashMap<>();
+//        dataSourceMap.put("main",mainDataSource());
+//        dataSourceMap.put("ds0",ds0DataSource());
+//        dataSourceMap.put("ds1",ds1DataSource());
+//        dataSourceMap.put("ds2",ds2DataSource());
+//        dataSourceMap.put("ds3",ds3DataSource());
+//
+//        // 配置分库 + 分表策略
+//        MasterSlaveRuleConfiguration masterSlaveRuleConfiguration = new MasterSlaveRuleConfiguration("test","main",
+//                Arrays.asList("ds0","ds1","ds2","ds3"));
+//        DataSource dataSource = MasterSlaveDataSourceFactory.createDataSource(dataSourceMap,masterSlaveRuleConfiguration, new Properties());
+//        return dataSource;
+//    }
+
 
 //    /**
 //     * 1个分片数据源

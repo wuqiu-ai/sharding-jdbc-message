@@ -1,0 +1,2 @@
+#自定义分布式主键生成器
+com.dxy.keygen.sharding.DxyShardingKeyGenerator
