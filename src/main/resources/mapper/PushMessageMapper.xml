@@ -217,4 +217,14 @@
       modifyTime = #{modifytime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!--通过traceid查询-->
+  <select id="selectByTraceId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT * FROM push_message WHERE traceId = #{traceId,jdbcType=BIGINT}
+  </select>
+
+  <!-- 更新状态 -->
+  <update id="updateStatusById">
+    UPDATE push_message SET status='click' WHERE id = #{id} and traceId = #{traceId}
+  </update>
 </mapper>

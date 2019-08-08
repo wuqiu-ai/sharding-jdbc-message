@@ -10,12 +10,16 @@ import org.apache.shardingsphere.shardingjdbc.api.ShardingDataSourceFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -31,37 +35,38 @@ import java.util.Properties;
 @Slf4j
 @Configuration
 @EnableAutoConfiguration
+@EnableTransactionManagement
 @MapperScan("com.fly.dao")
 public class ShardingDruidDataSourceAutoConfig{
 
     @Primary
     @Bean(name = "mainDataSource",autowire = Autowire.BY_NAME)
-    @ConfigurationProperties(prefix = "dxy.datasource.main-data-source")
+    @ConfigurationProperties(prefix = "fly.datasource.main-data-source")
     public DruidDataSource mainDataSource(){
         DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
         return commonConfigurete(dataSource);
     }
 
     @Bean(name = "ds0DataSource",autowire = Autowire.BY_NAME)
-    @ConfigurationProperties("dxy.datasource.ds0")
+    @ConfigurationProperties("fly.datasource.ds0")
     public DruidDataSource ds0DataSource(){
         return commonConfigurete(DruidDataSourceBuilder.create().build());
     }
 
     @Bean(name = "ds1DataSource",autowire = Autowire.BY_NAME)
-    @ConfigurationProperties("dxy.datasource.ds1")
+    @ConfigurationProperties("fly.datasource.ds1")
     public DruidDataSource ds1DataSource(){
         return commonConfigurete(DruidDataSourceBuilder.create().build());
     }
 
     @Bean(name = "ds2DataSource",autowire = Autowire.BY_NAME)
-    @ConfigurationProperties("dxy.datasource.ds2")
+    @ConfigurationProperties("fly.datasource.ds2")
     public DruidDataSource ds2DataSource(){
         return commonConfigurete(DruidDataSourceBuilder.create().build());
     }
 
     @Bean(name = "ds3DataSource",autowire = Autowire.BY_NAME)
-    @ConfigurationProperties("dxy.datasource.ds3")
+    @ConfigurationProperties("fly.datasource.ds3")
     public DruidDataSource ds3DataSource(){
         return commonConfigurete(DruidDataSourceBuilder.create().build());
     }
@@ -242,10 +247,22 @@ public class ShardingDruidDataSourceAutoConfig{
 //        return new JdbcTemplate(dataSource4());
 //    }
 
+    @Bean
+    @Autowired
+    public PlatformTransactionManager shardingTxManager() throws SQLException{
+        return new DataSourceTransactionManager(dataSource());
+    }
+
 
     @Bean("fourJdbcTemplate")
     public JdbcTemplate shardingJdbcTemplate() throws SQLException {
         return new JdbcTemplate(dataSource());
+    }
+
+    @Bean
+    @Autowired
+    public PlatformTransactionManager mainTxManager() throws SQLException{
+        return new DataSourceTransactionManager(mainDataSource());
     }
 
     /**

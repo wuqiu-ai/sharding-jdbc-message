@@ -2,6 +2,7 @@ package com.fly.dao;
 
 import com.fly.domain.PushMessage;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface PushMessageMapper {
@@ -52,4 +53,19 @@ public interface PushMessageMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(PushMessage record);
+
+    /**
+     * 通过traceid查询push
+     * @param traceId
+     * @return
+     */
+    PushMessage selectByTraceId(Long traceId);
+
+    /**
+     * 更新装填
+     * @param id
+     * @param traceId
+     * @return
+     */
+    int updateStatusById(@Param("id") Long id,@Param("traceId") Long traceId);
 }
