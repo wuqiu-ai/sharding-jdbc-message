@@ -130,7 +130,7 @@ public class ShardingDruidDataSourceAutoConfig{
         // 配置Order表规则
         TableRuleConfiguration orderTableRuleConfig = new TableRuleConfiguration("push_message","ds${0..3}.push_message");
         //分布式主键
-        orderTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("DxyKeygenerator", "id"));
+        orderTableRuleConfig.setKeyGeneratorConfig(new KeyGeneratorConfiguration("SNOWFLAKE", "id"));
         // 配置分库策略
         orderTableRuleConfig.setDatabaseShardingStrategyConfig(
                 new InlineShardingStrategyConfiguration("traceId", "ds${traceId%4}"));

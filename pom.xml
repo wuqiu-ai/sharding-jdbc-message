@@ -31,12 +31,6 @@
         <!--</dependency>-->
 
         <dependency>
-            <groupId>com.dxy.framework</groupId>
-            <artifactId>dxy-framework-keygen-starter</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>${disruptor.version}</version>
@@ -46,12 +40,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.dxy.framework</groupId>
-            <artifactId>dxy-framework-keygen-sharingjdbc</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!--<dependency>-->
@@ -208,13 +196,7 @@
             <artifactId>sharding-jdbc-core</artifactId>
             <version>4.0.0-RC1</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.dxy.framework</groupId>
-            <artifactId>dxy-framework-keygen-sharding-spi</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
-        </dependency>
-
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
