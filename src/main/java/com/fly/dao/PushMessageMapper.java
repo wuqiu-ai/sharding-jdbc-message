@@ -4,6 +4,8 @@ import com.fly.domain.PushMessage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface PushMessageMapper {
     /**
@@ -68,4 +70,10 @@ public interface PushMessageMapper {
      * @return
      */
     int updateStatusById(@Param("id") Long id,@Param("traceId") Long traceId);
+
+    /**
+     * 测试in语法
+     * @return
+     */
+    List<PushMessage> selectByIn();
 }

@@ -227,4 +227,9 @@
   <update id="updateStatusById">
     UPDATE push_message SET status='click' WHERE id = #{id} and traceId = #{traceId}
   </update>
+
+  <!--测试in语法-->
+  <select id="selectByIn" resultMap="BaseResultMap">
+    SELECT * FROM push_message WHERE traceId in(3358743107180167168,3358744956163588113,3358749661300260878)
+  </select>
 </mapper>

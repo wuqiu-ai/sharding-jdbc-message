@@ -98,4 +98,9 @@ public class ApplicationTests {
         System.out.println("--------:"+result.call().toString());
     }
 
+    @Test
+    public void testSqlin(){
+        pushMessageMapper.selectByIn();
+    }
+
 }

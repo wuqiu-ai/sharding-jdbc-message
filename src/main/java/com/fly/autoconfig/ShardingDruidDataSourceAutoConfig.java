@@ -139,7 +139,7 @@ public class ShardingDruidDataSourceAutoConfig{
         shardingRuleConfig.getTableRuleConfigs().add(orderTableRuleConfig);
 
         Properties properties = new Properties();
-        properties.setProperty("sql.show","false");
+        properties.setProperty("sql.show","true");
         properties.setProperty("executor.size","100");
         //执行引擎工作模式-内存模式和限制模式
         properties.setProperty("max.connections.size.per.query","1");
