@@ -220,7 +220,7 @@
 
   <!--通过traceid查询-->
   <select id="selectByTraceId" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    SELECT * FROM push_message WHERE traceId = #{traceId,jdbcType=BIGINT}
+    SELECT * FROM push_message WHERE traceId = #{traceId,jdbcType=BIGINT} limit 1
   </select>
 
   <!-- 更新状态 -->

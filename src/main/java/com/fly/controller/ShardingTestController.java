@@ -1,5 +1,6 @@
 package com.fly.controller;
 
+import com.fly.domain.PushMessage;
 import com.fly.service.PushService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +72,23 @@ public class ShardingTestController {
         int[] update_argTypes = {Types.BIGINT, Types.BIGINT};
         String updateSql = "UPDATE push_message SET status='click' WHERE id = ? and traceId = ?";
         jdbcTemplate.update(updateSql, update_args, update_argTypes);
-
-//        pushService.selectByTraceId(traceId);
         return "ok";
+    }
+
+    /**
+     * 通过treacid查询
+     * @param traceId
+     * @return
+     */
+    @PostMapping("/message/selectbytraceid")
+    public String testSelectByTraceId(@RequestParam("traceId") Long traceId){
+        PushMessage pushMessage = pushService.selectByTraceId(traceId);
+        Long aa = pushMessage.getTraceid();
+        if(null != pushMessage){
+            return "ok";
+        }else {
+            return "result is null";
+        }
     }
 
 
