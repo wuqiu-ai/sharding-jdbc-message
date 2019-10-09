@@ -1,7 +1,7 @@
 //package com.fly.autoconfig;
 //
-//import com.alibaba.druid.pool.DruidDataSource;
-//import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
+//import com.alibaba.rsa.pool.DruidDataSource;
+//import com.alibaba.rsa.spring.boot.autoconfigure.DruidDataSourceBuilder;
 //import org.springframework.beans.factory.annotation.Autowire;
 //import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 //import org.springframework.boot.context.properties.ConfigurationProperties;

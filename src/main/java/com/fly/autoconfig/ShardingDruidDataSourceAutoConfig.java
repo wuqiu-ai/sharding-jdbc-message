@@ -105,8 +105,8 @@ public class ShardingDruidDataSourceAutoConfig{
 
 //        //通过connectProperties属性来打开mergeSql功能；慢SQL记录
 //        Properties properties = new Properties();
-//        properties.setProperty("druid.stat.mergeSql","true");
-//        properties.setProperty("druid.stat.slowSqlMillis","5000");
+//        properties.setProperty("rsa.stat.mergeSql","true");
+//        properties.setProperty("rsa.stat.slowSqlMillis","5000");
 //        dataSource.setConnectProperties(properties);
         return dataSource;
     }
