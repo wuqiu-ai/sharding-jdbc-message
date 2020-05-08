@@ -83,7 +83,6 @@ public class ShardingTestController {
     @PostMapping("/message/selectbytraceid")
     public String testSelectByTraceId(@RequestParam("traceId") Long traceId){
         PushMessage pushMessage = pushService.selectByTraceId(traceId);
-        Long aa = pushMessage.getTraceid();
         if(null != pushMessage){
             return "ok";
         }else {

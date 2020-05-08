@@ -7,7 +7,7 @@ import com.fly.domain.PushMessage;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
-import org.apache.shardingsphere.core.util.InlineExpressionParser;
+import org.apache.shardingsphere.underlying.common.config.inline.InlineExpressionParser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
