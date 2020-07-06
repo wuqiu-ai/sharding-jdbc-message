@@ -2,6 +2,7 @@ package com.fly.autoconfig;
 
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.MonitoredQueuedThreadPool;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
@@ -21,6 +22,7 @@ public class JettyConfig {
     public JettyEmbeddedServletContainerFactory jettyEmbeddedServletContainerFactory(
             JettyServerCustomizer jettyServerCustomizer) {
         JettyEmbeddedServletContainerFactory factory = new JettyEmbeddedServletContainerFactory();
+        factory.setThreadPool(this.threadPool());
         factory.addServerCustomizers(jettyServerCustomizer);
         return factory;
     }
@@ -29,21 +31,21 @@ public class JettyConfig {
     @Bean
     public JettyServerCustomizer jettyServerCustomizer() {
         return server -> {
-            threadPool(server);
             accessLog(server);
         };
     }
 
-    private void threadPool(Server server){
+    private MonitoredQueuedThreadPool threadPool(){
         // Tweak the connection config used by Jetty to handle incoming HTTP
         // connections
-        final QueuedThreadPool threadPool = server.getBean(QueuedThreadPool.class);
+        final MonitoredQueuedThreadPool threadPool = new MonitoredQueuedThreadPool();
         //默认最大线程连接数200
         threadPool.setMaxThreads(500);
         //默认最小线程连接数8
         threadPool.setMinThreads(100);
         //默认线程最大空闲时间60000ms
         threadPool.setIdleTimeout(60000);
+        return threadPool;
     }
 
     //jetty启动日志

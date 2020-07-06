@@ -16,3 +16,14 @@ spring:
   profiles:
     active: dev
 
+management:
+  contextPath: /monitor
+  endpoints:
+    web:
+      base-path: /monitor
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    shutdown: true

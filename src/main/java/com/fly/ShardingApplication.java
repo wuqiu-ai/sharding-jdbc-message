@@ -2,6 +2,7 @@ package com.fly;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author: peijiepang
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Description:
  */
 //@EnableApolloConfig
+@EnableScheduling
 @SpringBootApplication
 public class ShardingApplication {
 
